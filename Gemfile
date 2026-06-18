@@ -17,3 +17,8 @@ gem "rubocop"
 # gem "rspec", "~> 3.0"
 # gem "simplecov", "~> 0.18.0"
 # gem "simplecov-console"
+
+# Security audit gems
+gem "bundler-audit"
+gem "ruby_audit"
+
