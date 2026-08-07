@@ -57,6 +57,13 @@ class Scraper
     nil
   end
 
+  def first_description_paragraph(main_content)
+    main_content.search("p").find do |p|
+      text = clean_whitespace(p.text)
+      !text.empty? && text !~ /Planning Application Number|Council won't make a decision/
+    end
+  end
+
   # Extract description and on_notice_to from details page
   def extract_details(agent, info_url, record)
     detail_page = throttle_block do
@@ -67,8 +74,9 @@ class Scraper
     main_content = detail_page.at("div#main-content")
     return unless main_content
 
-    # Description from first em paragraph
-    first_p = main_content.at("p em")
+    # Description from first em paragraph, falling back to the first
+    # non-boilerplate paragraph (pages published since July 2026 dropped the em)
+    first_p = main_content.at("p em") || first_description_paragraph(main_content)
     record["description"] = clean_whitespace(first_p.text) if first_p
 
     # on_notice_to from paragraph with "Council won't make a decision before"
